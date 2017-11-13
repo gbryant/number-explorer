@@ -1,36 +1,51 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2015-11-19T09:50:26
+# Project created by QtCreator 2017-11-06T11:46:38
 #
 #-------------------------------------------------
 
 QT       += core gui
-QMAKE_CXXFLAGS += -std=c++11
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = NumberExplorer
 TEMPLATE = app
 
+# The following define makes your compiler emit warnings if you use
+# any feature of Qt which has been marked as deprecated (the exact warnings
+# depend on your compiler). Please consult the documentation of the
+# deprecated API in order to know how to port your code away from it.
+DEFINES += QT_DEPRECATED_WARNINGS
 
-SOURCES += main.cpp\
-    neconsolewindow.cpp \
-    nemainwindow.cpp \
-    neconsolecommand.cpp \
-    neview.cpp \
-    nedisplayobject.cpp \
-    factormap.cpp \
-    pointset.cpp
+# You can also make your code fail to compile if you use deprecated APIs.
+# In order to do so, uncomment the following line.
+# You can also select to disable deprecated APIs only up to a certain version of Qt.
+#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-HEADERS  += \
-    neconsolewindow.h \
-    nemainwindow.h \
-    neconsolecommand.h \
-    neview.h \
-    nedisplayobject.h \
-    factormap.h \
-    pointset.h
+LIBS += "C:\development\mpir-3.0.0\dll\x64\Release\mpir.lib"
 
-FORMS    +=
+INCLUDEPATH += "C:\development\boost_1_65_1"
+INCLUDEPATH += "C:\development\mpir-3.0.0\dll\x64\Release"
 
-LIBS += -lgmp
+HEADERS += \
+    src/factormap.h \
+    src/neconsolecommand.h \
+    src/neconsolewindow.h \
+    src/nedisplayobject.h \
+    src/nemainwindow.h \
+    src/neview.h \
+    src/pointset.h
+
+SOURCES += \
+    src/consolecommands.cpp \
+    src/factormap.cpp \
+    src/main.cpp \
+    src/neconsolecommand.cpp \
+    src/neconsolewindow.cpp \
+    src/nedisplayobject.cpp \
+    src/nemainwindow.cpp \
+    src/neview.cpp \
+    src/pointset.cpp
+
+
+

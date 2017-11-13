@@ -37,6 +37,8 @@ NEView::NEView(QWidget *parent) : QWidget(parent)
     yOffset = 0;
     xOffset = 0;
     scale=1;
+    showCrossHairs=true;
+    showClickPoints=true;
 }
 
 void NEView::paintEvent(QPaintEvent *event)
@@ -102,11 +104,14 @@ void NEView::render()
     {
         displayObjects[i]->render(this);
     }
-    QPainter painter(image);
-    painter.setPen(Qt::green);
-    painter.setBrush(Qt::green);
-    painter.drawLine(0,height()/2,width()-1,height()/2);
-    painter.drawLine(width()/2,0,width()/2,height()-1);
+    if(showCrossHairs)
+    {
+        QPainter painter(image);
+        painter.setPen(Qt::green);
+        painter.setBrush(Qt::green);
+        painter.drawLine(0,height()/2,width()-1,height()/2);
+        painter.drawLine(width()/2,0,width()/2,height()-1);
+    }
 }
 
 void NEView::resizeEvent(QResizeEvent *event)
@@ -148,8 +153,10 @@ void NEView::mousePressEvent(QMouseEvent *event)
     clickPoint = event->pos();
     originalXOffset = xOffset;
     originalYOffset = yOffset;
-
-    printScreenPoint(clickPoint.x(),clickPoint.y());
+    if(showClickPoints)
+    {
+        printScreenPoint(clickPoint.x(),clickPoint.y());
+    }
 
 }
 
@@ -239,8 +246,8 @@ void NEView::keyPressEvent(QKeyEvent *event)
             if(event->modifiers()&Qt::ControlModifier&&event->modifiers()&Qt::ShiftModifier){amount=500;}
             if(event->modifiers()&Qt::AltModifier)
             {
-                mpz_fac_ui(amount.backend().data(),abs(yFactorialOffset));
-                yFactorialOffset+=1;
+                //mpz_fac_ui(amount.backend().data(),abs(yFactorialOffset));
+                //yFactorialOffset+=1;
             }
             yOffset+=amount;
 
@@ -257,8 +264,8 @@ void NEView::keyPressEvent(QKeyEvent *event)
         if(event->modifiers()&Qt::ControlModifier&&event->modifiers()&Qt::ShiftModifier){amount=500;}
         if(event->modifiers()&Qt::AltModifier)
         {
-            yFactorialOffset-=1;
-            mpz_fac_ui(amount.backend().data(),abs(yFactorialOffset));
+            //yFactorialOffset-=1;
+            //mpz_fac_ui(amount.backend().data(),abs(yFactorialOffset));
         }
         yOffset-=amount;
 
@@ -275,8 +282,8 @@ void NEView::keyPressEvent(QKeyEvent *event)
         if(event->modifiers()&Qt::ControlModifier&&event->modifiers()&Qt::ShiftModifier){amount=500;}
         if(event->modifiers()&Qt::AltModifier)
         {
-            xFactorialOffset-=1;
-            mpz_fac_ui(amount.backend().data(),abs(xFactorialOffset));
+            //xFactorialOffset-=1;
+            //mpz_fac_ui(amount.backend().data(),abs(xFactorialOffset));
         }
         xOffset-=amount;
 
@@ -293,8 +300,8 @@ void NEView::keyPressEvent(QKeyEvent *event)
         if(event->modifiers()&Qt::ControlModifier&&event->modifiers()&Qt::ShiftModifier){amount=500;}
         if(event->modifiers()&Qt::AltModifier)
         {
-            mpz_fac_ui(amount.backend().data(),abs(xFactorialOffset));
-            xFactorialOffset+=1;
+            //mpz_fac_ui(amount.backend().data(),abs(xFactorialOffset));
+            //xFactorialOffset+=1;
         }
         xOffset+=amount;
 

@@ -23,6 +23,39 @@ limitations under the License.
 using boost::multiprecision::abs;
 using boost::multiprecision::mpz_int;
 
+class ToggleBoolean : public NEConsoleCommand
+{
+public:
+
+    QString label;
+    QString aliasLabel;
+    bool    *value;
+
+    ToggleBoolean(NEConsoleWindow *consoleWindow,bool *boolVal, QString label, QString aliasLabel):NEConsoleCommand(consoleWindow)
+    {
+        name = "toggle";
+        alias = "t";
+        description = "toggle/t "+label+"/"+aliasLabel;
+        this->label = label;
+        this->value = boolVal;
+        this->aliasLabel = aliasLabel;
+    }
+    void command(void *data);
+};
+
+void ToggleBoolean::command(void *data)
+{
+    QString *txt = (QString*)data;
+    if(txt==label||txt==aliasLabel)
+    {
+        (*value) = !(*value);
+        consoleWindow->appendText(label+": "+QString::number(*value)+"\n");
+        consoleWindow->mainWindow->view.render();
+        consoleWindow->mainWindow->view.update();
+        consoleWindow->lineEdit.setText("");
+    }
+}
+
 mpz_int _fixYOffsetAndSign(mpz_int x, mpz_int y);
 mpz_int _fixYOffsetAndSign(mpz_int x, mpz_int y)
 {
@@ -68,6 +101,8 @@ void QuitApp::command(void *data)
     qApp->exit();
     consoleWindow->lineEdit.setText("");
 }
+
+
 
 class TestCommand : public NEConsoleCommand
 {

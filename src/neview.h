@@ -50,6 +50,9 @@ public:
     long unsigned int xFactorialOffset,yFactorialOffset;
     int scale;
 
+    bool showClickPoints;
+    bool showCrossHairs;
+
 //test to optimize setPoint
     mpz_int xVal;
     mpz_int yVal;
