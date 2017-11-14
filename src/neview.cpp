@@ -23,6 +23,7 @@ limitations under the License.
 #include <boost/multiprecision/gmp.hpp>
 using boost::multiprecision::mpz_int;
 using boost::multiprecision::mpf_float;
+using boost::multiprecision::abs;
 
 
 #define QN(X) QString::number(X)
@@ -246,8 +247,8 @@ void NEView::keyPressEvent(QKeyEvent *event)
             if(event->modifiers()&Qt::ControlModifier&&event->modifiers()&Qt::ShiftModifier){amount=500;}
             if(event->modifiers()&Qt::AltModifier)
             {
-                //mpz_fac_ui(amount.backend().data(),abs(yFactorialOffset));
-                //yFactorialOffset+=1;
+                mpz_fac_ui(amount.backend().data(),abs(yFactorialOffset));
+                yFactorialOffset+=1;
             }
             yOffset+=amount;
 
@@ -264,8 +265,8 @@ void NEView::keyPressEvent(QKeyEvent *event)
         if(event->modifiers()&Qt::ControlModifier&&event->modifiers()&Qt::ShiftModifier){amount=500;}
         if(event->modifiers()&Qt::AltModifier)
         {
-            //yFactorialOffset-=1;
-            //mpz_fac_ui(amount.backend().data(),abs(yFactorialOffset));
+            yFactorialOffset-=1;
+            mpz_fac_ui(amount.backend().data(),abs(yFactorialOffset));
         }
         yOffset-=amount;
 
@@ -282,8 +283,8 @@ void NEView::keyPressEvent(QKeyEvent *event)
         if(event->modifiers()&Qt::ControlModifier&&event->modifiers()&Qt::ShiftModifier){amount=500;}
         if(event->modifiers()&Qt::AltModifier)
         {
-            //xFactorialOffset-=1;
-            //mpz_fac_ui(amount.backend().data(),abs(xFactorialOffset));
+            xFactorialOffset-=1;
+            mpz_fac_ui(amount.backend().data(),abs(xFactorialOffset));
         }
         xOffset-=amount;
 
@@ -300,8 +301,8 @@ void NEView::keyPressEvent(QKeyEvent *event)
         if(event->modifiers()&Qt::ControlModifier&&event->modifiers()&Qt::ShiftModifier){amount=500;}
         if(event->modifiers()&Qt::AltModifier)
         {
-            //mpz_fac_ui(amount.backend().data(),abs(xFactorialOffset));
-            //xFactorialOffset+=1;
+            mpz_fac_ui(amount.backend().data(),abs(xFactorialOffset));
+            xFactorialOffset+=1;
         }
         xOffset+=amount;
 

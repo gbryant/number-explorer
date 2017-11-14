@@ -47,7 +47,7 @@ public:
     QList<NEDisplayObject*> displayObjects;
     NEConsoleWindow *consoleWindow;
     boost::multiprecision::mpz_int xOffset,yOffset;
-    long unsigned int xFactorialOffset,yFactorialOffset;
+    long int xFactorialOffset,yFactorialOffset;
     int scale;
 
     bool showClickPoints;
