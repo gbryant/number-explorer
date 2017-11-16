@@ -35,8 +35,11 @@ void NEConsoleWindow::init()
 {
     commands.append(new QuitApp(this));
     commands.append(new TestCommand(this));
+    commands.append(new PrintInfo(this));
     commands.append(new ToggleBoolean(this,&(mainWindow->view.showCrossHairs),"showCrossHairs","sch"));
     commands.append(new ToggleBoolean(this,&(mainWindow->view.showClickPoints),"showClickPoints","scp"));
+    commands.append(new GoX(this));
+    commands.append(new GoY(this));
 }
 
 void NEConsoleWindow::returnPressedSlot()

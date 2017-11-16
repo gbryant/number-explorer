@@ -35,8 +35,14 @@ NEView::NEView(QWidget *parent) : QWidget(parent)
     setFocusPolicy(Qt::StrongFocus);
     xFactorialOffset = 0;
     yFactorialOffset = 0;
+    factorialXScrolling=false;
+    factorialYScrolling=false;
     yOffset = 0;
     xOffset = 0;
+    xScrollAmt=0;
+    yScrollAmt=0;
+    originalXScrollAmt=0;
+    originalYScrollAmt=0;
     scale=1;
     showCrossHairs=true;
     showClickPoints=true;
@@ -62,6 +68,18 @@ void NEView::getScreenBounds(mpz_int *top, mpz_int *bottom, mpz_int *left, mpz_i
     *right = (xOffset+width()-1)/scale;
     *right += 1;
 
+}
+
+void NEView::setXPos(mpz_int x)
+{
+    xScrollAmt=x*scale-width()/2;
+    xOffset=xScrollAmt;
+}
+
+void NEView::setYPos(mpz_int y)
+{
+    yScrollAmt=y*scale-height()/2;
+    yOffset=yScrollAmt;
 }
 
 void NEView::setPoint(mpz_int x, mpz_int y)
@@ -145,6 +163,10 @@ void NEView::mouseMoveEvent(QMouseEvent *event)
 {
     xOffset = originalXOffset+(clickPoint.x()-event->pos().x());
     yOffset = originalYOffset+(event->pos().y()-clickPoint.y());
+
+    xScrollAmt = originalXScrollAmt+(clickPoint.x()-event->pos().x());
+    yScrollAmt = originalYScrollAmt+(event->pos().y()-clickPoint.y());
+
     render();
     update();
 }
@@ -154,6 +176,8 @@ void NEView::mousePressEvent(QMouseEvent *event)
     clickPoint = event->pos();
     originalXOffset = xOffset;
     originalYOffset = yOffset;
+    originalXScrollAmt = xScrollAmt;
+    originalYScrollAmt = yScrollAmt;
     if(showClickPoints)
     {
         printScreenPoint(clickPoint.x(),clickPoint.y());
@@ -195,6 +219,9 @@ void NEView::keyPressEvent(QKeyEvent *event)
                 xOffset = (mpz_int)a;
                 yOffset = (mpz_int)b;
 
+                xScrollAmt = xOffset;
+                yScrollAmt = yOffset;
+
                 /*
                 sW = static_cast<mpf_float>(width())/static_cast<mpf_float>(scale-1)/2;
                 sH = (float)height()/(float)(scale-1)/2;
@@ -233,6 +260,9 @@ void NEView::keyPressEvent(QKeyEvent *event)
                 xOffset = (mpz_int)a;
                 yOffset = (mpz_int)b;
 
+                xScrollAmt = xOffset;
+                yScrollAmt = yOffset;
+
                 render();
                 update();
             }
@@ -241,16 +271,26 @@ void NEView::keyPressEvent(QKeyEvent *event)
         case Qt::Key_Up:
         {
             amount=10;
-
             if(event->modifiers()&Qt::ShiftModifier){amount=1;}
             if(event->modifiers()&Qt::ControlModifier){amount=100;}
             if(event->modifiers()&Qt::ControlModifier&&event->modifiers()&Qt::ShiftModifier){amount=500;}
-            if(event->modifiers()&Qt::AltModifier)
+            if(event->modifiers()==Qt::AltModifier)
             {
-                mpz_fac_ui(amount.backend().data(),abs(yFactorialOffset));
                 yFactorialOffset+=1;
+                amount=0;
             }
-            yOffset+=amount;
+
+            if(yFactorialOffset!=0)
+            {
+                mpz_fac_ui(yOffset.backend().data(),abs(yFactorialOffset));
+                if(yFactorialOffset<0){yOffset*=-1;}
+            }
+            else
+            {
+                yOffset=0;
+            }
+            yScrollAmt+=amount;
+            yOffset+=yScrollAmt;
 
             render();
             update();
@@ -263,12 +303,24 @@ void NEView::keyPressEvent(QKeyEvent *event)
         if(event->modifiers()&Qt::ShiftModifier){amount=1;}
         if(event->modifiers()&Qt::ControlModifier){amount=100;}
         if(event->modifiers()&Qt::ControlModifier&&event->modifiers()&Qt::ShiftModifier){amount=500;}
-        if(event->modifiers()&Qt::AltModifier)
+        if(event->modifiers()==Qt::AltModifier)
         {
             yFactorialOffset-=1;
-            mpz_fac_ui(amount.backend().data(),abs(yFactorialOffset));
+            amount=0;
         }
-        yOffset-=amount;
+
+        if(yFactorialOffset!=0)
+        {
+            mpz_fac_ui(yOffset.backend().data(),abs(yFactorialOffset));
+            if(yFactorialOffset<0){yOffset*=-1;}
+
+        }
+        else
+        {
+            yOffset=0;
+        }
+        yScrollAmt-=amount;
+        yOffset+=yScrollAmt;
 
         render();
         update();
@@ -281,12 +333,23 @@ void NEView::keyPressEvent(QKeyEvent *event)
         if(event->modifiers()&Qt::ShiftModifier){amount=1;}
         if(event->modifiers()&Qt::ControlModifier){amount=100;}
         if(event->modifiers()&Qt::ControlModifier&&event->modifiers()&Qt::ShiftModifier){amount=500;}
-        if(event->modifiers()&Qt::AltModifier)
+        if(event->modifiers()==Qt::AltModifier)
         {
             xFactorialOffset-=1;
-            mpz_fac_ui(amount.backend().data(),abs(xFactorialOffset));
+            amount=0;
         }
-        xOffset-=amount;
+
+        if(xFactorialOffset!=0)
+        {
+            mpz_fac_ui(xOffset.backend().data(),abs(xFactorialOffset));
+            if(xFactorialOffset<0){xOffset*=-1;}
+        }
+        else
+        {
+            xOffset=0;
+        }
+        xScrollAmt-=amount;
+        xOffset+=xScrollAmt;
 
         render();
         update();
@@ -299,12 +362,23 @@ void NEView::keyPressEvent(QKeyEvent *event)
         if(event->modifiers()&Qt::ShiftModifier){amount=1;}
         if(event->modifiers()&Qt::ControlModifier){amount=100;}
         if(event->modifiers()&Qt::ControlModifier&&event->modifiers()&Qt::ShiftModifier){amount=500;}
-        if(event->modifiers()&Qt::AltModifier)
+        if(event->modifiers()==Qt::AltModifier)
         {
-            mpz_fac_ui(amount.backend().data(),abs(xFactorialOffset));
             xFactorialOffset+=1;
+            amount=0;
         }
-        xOffset+=amount;
+
+        if(xFactorialOffset!=0)
+        {
+            mpz_fac_ui(xOffset.backend().data(),abs(xFactorialOffset));
+            if(xFactorialOffset<0){xOffset*=-1;}
+        }
+        else
+        {
+            xOffset=0;
+        }
+        xScrollAmt+=amount;
+        xOffset+=xScrollAmt;
 
         render();
         update();
@@ -314,8 +388,11 @@ void NEView::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Escape:
     {
        scale=1;
+       resolution=1;
        xOffset=0;
        yOffset=0;
+       xScrollAmt=0;
+       yScrollAmt=0;
        xFactorialOffset=0;
        yFactorialOffset=0;
        render();

@@ -56,32 +56,117 @@ void ToggleBoolean::command(void *data)
     }
 }
 
-mpz_int _fixYOffsetAndSign(mpz_int x, mpz_int y);
-mpz_int _fixYOffsetAndSign(mpz_int x, mpz_int y)
+class GoX : public NEConsoleCommand
 {
-    mpz_int temp;
+public:
+    GoX(NEConsoleWindow *consoleWindow):NEConsoleCommand(consoleWindow)
+    {
+        name = "x";
+        description = "x n go to x coordinate n";
+    }
+    void command(void *data);
+};
 
-    if(y>=0)
+void GoX::command(void *data)
+{
+    QString *txt = (QString*)data;
+    /*
+    float xPos = (width-1)/2+xOffset;
+    xPos=floor((float)xPos/(float)scale);
+    xPos/=(float)pow(10,resolution);
+    return xPos;
+    */
+    mpz_int xPos;
+    int err = mpz_set_str(xPos.backend().data(),txt->toStdString().c_str(),10);
+    if(err){consoleWindow->lineEdit.setText("failure");return;}
+
+    consoleWindow->mainWindow->view.setXPos(xPos);
+
+    //int xPos = txt->toInt();
+    /*
+    xPos*=(float)pow(10,cw->displayWidget->display->resolution);
+    xPos=(float)xPos*(float)cw->displayWidget->display->scale;
+    xPos -= (cw->displayWidget->display->width-1)/2;
+    cw->displayWidget->display->xOffset=xPos;
+    cw->displayWidget->render();
+    cw->displayWidget->update();
+    */
+    consoleWindow->mainWindow->view.render();
+    consoleWindow->mainWindow->view.update();
+    consoleWindow->lineEdit.setText("");
+}
+
+class GoY : public NEConsoleCommand
+{
+public:
+    GoY(NEConsoleWindow *consoleWindow):NEConsoleCommand(consoleWindow)
     {
-        if(y>abs(x))
-        {
-            if(y%abs(x)!=0)
-            {return abs(x)-(y%abs(x))+y;}
-            else{return y;}
-        }
-        else{return abs(x);}
+        name = "y";
+        description = "y n go to y coordinate n";
     }
-    else
+    void command(void *data);
+};
+
+void GoY::command(void *data)
+{
+    QString *txt = (QString*)data;
+
+    mpz_int yPos;
+    int err = mpz_set_str(yPos.backend().data(),txt->toStdString().c_str(),10);
+    if(err){consoleWindow->lineEdit.setText("failure");return;}
+
+    consoleWindow->mainWindow->view.setYPos(yPos);
+
+    consoleWindow->mainWindow->view.render();
+    consoleWindow->mainWindow->view.update();
+    consoleWindow->lineEdit.setText("");
+}
+
+class PrintInfo : public NEConsoleCommand
+{
+public:
+    PrintInfo(NEConsoleWindow *consoleWindow):NEConsoleCommand(consoleWindow)
     {
-        if(abs(y)>=abs(x))
-        {
-            temp=abs(x)-(abs(y)%abs(x))+abs(y);
-            temp=temp-abs(x);
-            temp*=-1;
-            return temp;
-        }
-        else{return 0;}
+        name = "p";
+        description = "print various pieces of debug information";
     }
+    void command(void *data);
+};
+
+void PrintInfo::command(void *data)
+{
+    consoleWindow->appendText("\n");
+    QString outStr = QString("scale: ");
+    outStr += QN(consoleWindow->mainWindow->view.scale);
+    outStr += "\n";
+    outStr += QString("resolution: ");
+    outStr += QN(consoleWindow->mainWindow->view.resolution);
+    outStr+="\n";
+    outStr+="xFactorialOffset: "+QN(consoleWindow->mainWindow->view.xFactorialOffset);
+    outStr+="\n";
+    outStr+="yFactorialOffset: "+QN(consoleWindow->mainWindow->view.yFactorialOffset);
+    outStr+="\n";
+    std::stringstream xStream;
+    xStream<<consoleWindow->mainWindow->view.xOffset;
+    std::stringstream yStream;
+    yStream<<consoleWindow->mainWindow->view.yOffset;
+    outStr+="xOffset:"+QString::fromStdString(xStream.str());
+    outStr+="\n";
+    outStr+="yOffset:"+QString::fromStdString(yStream.str());
+    outStr+="\n";
+    xStream.str("");
+    yStream.str("");
+    xStream<<consoleWindow->mainWindow->view.xScrollAmt;
+    yStream<<consoleWindow->mainWindow->view.yScrollAmt;
+    outStr+="xScrollAmt:"+QString::fromStdString(xStream.str());
+    outStr+="\n";
+    outStr+="yScrollAmt:"+QString::fromStdString(yStream.str());
+    outStr+="\n";
+    consoleWindow->appendText(outStr);
+    consoleWindow->appendText("center point: ");
+    consoleWindow->mainWindow->view.printScreenPoint(consoleWindow->mainWindow->view.width()/2,consoleWindow->mainWindow->view.height()/2);
+    consoleWindow->appendText("\n");
+    consoleWindow->lineEdit.setText("");
 }
 
 class QuitApp : public NEConsoleCommand
@@ -118,53 +203,5 @@ public:
 
 void TestCommand::command(void *data)
 {
-    /*
-    QString outStr = QString("test ");
-    outStr+="\n";
-    consoleWindow->appendText(outStr);
-    consoleWindow->lineEdit.setText("");
 
-
-
-
-
-
-
-
-    int width = consoleWindow->mainWindow->graphicsView.viewport()->width();
-    int height = consoleWindow->mainWindow->graphicsView.viewport()->height();
-
-    QImage image(width,height,QImage::Format_RGB888);
-    image.fill(Qt::black);
-
-
-
-    int left = 0;
-    int right = width-1;
-    mpz_int top = height-1+consoleWindow->mainWindow->graphicsView.yOffset;
-    mpz_int bottom = 0+consoleWindow->mainWindow->graphicsView.yOffset;
-
-
-    for(int i=left;i<right;i++)
-        {
-            if(i==0){continue;}
-
-            mpz_int j = _fixYOffsetAndSign(i,bottom);
-
-            while(j<=top)
-            {
-                mpz_int yVal = height-1-j+consoleWindow->mainWindow->graphicsView.yOffset;
-                image.setPixel(i,static_cast<int>(yVal),0xFFFFFFFF);
-                j+=abs(i);
-            }
-        }
-
-
-    QPixmap pixMap;
-    pixMap.convertFromImage(image);
-
-    consoleWindow->mainWindow->graphicsScene.addPixmap(pixMap);
-*/
-    //consoleWindow->mainWindow->graphicsScene.addText("Boom Diggy");
-    //consoleWindow->mainWindow->graphicsScene.addEllipse(0,0,10000,10000,QPen(Qt::black),QBrush(Qt::blue));
 }

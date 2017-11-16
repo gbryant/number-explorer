@@ -37,6 +37,8 @@ public:
     void mousePressEvent(QMouseEvent *event);
     void render();
     void setPoint(mpz_int x, mpz_int y);
+    void setXPos(mpz_int x);
+    void setYPos(mpz_int y);
     void getScreenBounds(mpz_int *top, mpz_int *bottom, mpz_int *left, mpz_int *right);
     void printScreenPoint(int x, int y);
 
@@ -47,8 +49,13 @@ public:
     QList<NEDisplayObject*> displayObjects;
     NEConsoleWindow *consoleWindow;
     boost::multiprecision::mpz_int xOffset,yOffset;
+    boost::multiprecision::mpz_int originalXScrollAmt, originalYScrollAmt;
+    boost::multiprecision::mpz_int xScrollAmt, yScrollAmt;
+    bool factorialXScrolling;
+    bool factorialYScrolling;
     long int xFactorialOffset,yFactorialOffset;
     int scale;
+    int resolution;
 
     bool showClickPoints;
     bool showCrossHairs;

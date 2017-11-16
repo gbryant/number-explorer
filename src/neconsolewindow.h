@@ -20,6 +20,7 @@ limitations under the License.
 
 #include "neconsolecommand.h"
 #include <QtWidgets>
+#define QN(X) QString::number(X)
 class NEMainWindow;
 
 class NEConsoleWindow : public QWidget
