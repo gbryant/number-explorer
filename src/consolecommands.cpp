@@ -70,27 +70,13 @@ public:
 void GoX::command(void *data)
 {
     QString *txt = (QString*)data;
-    /*
-    float xPos = (width-1)/2+xOffset;
-    xPos=floor((float)xPos/(float)scale);
-    xPos/=(float)pow(10,resolution);
-    return xPos;
-    */
+
     mpz_int xPos;
     int err = mpz_set_str(xPos.backend().data(),txt->toStdString().c_str(),10);
     if(err){consoleWindow->lineEdit.setText("failure");return;}
 
     consoleWindow->mainWindow->view.setXPos(xPos);
 
-    //int xPos = txt->toInt();
-    /*
-    xPos*=(float)pow(10,cw->displayWidget->display->resolution);
-    xPos=(float)xPos*(float)cw->displayWidget->display->scale;
-    xPos -= (cw->displayWidget->display->width-1)/2;
-    cw->displayWidget->display->xOffset=xPos;
-    cw->displayWidget->render();
-    cw->displayWidget->update();
-    */
     consoleWindow->mainWindow->view.render();
     consoleWindow->mainWindow->view.update();
     consoleWindow->lineEdit.setText("");
@@ -116,6 +102,32 @@ void GoY::command(void *data)
     if(err){consoleWindow->lineEdit.setText("failure");return;}
 
     consoleWindow->mainWindow->view.setYPos(yPos);
+
+    consoleWindow->mainWindow->view.render();
+    consoleWindow->mainWindow->view.update();
+    consoleWindow->lineEdit.setText("");
+}
+
+class GoScale : public NEConsoleCommand
+{
+public:
+    GoScale(NEConsoleWindow *consoleWindow):NEConsoleCommand(consoleWindow)
+    {
+        name = "zoom";
+        alias = "z";
+        description = "zoom n set scale to n";
+    }
+    void command(void *data);
+};
+
+void GoScale::command(void *data)
+{
+    QString *txt = (QString*)data;
+
+    int scale = txt->toInt();
+    if(scale<=0){scale=2;}
+
+    consoleWindow->mainWindow->view.setScale(scale);
 
     consoleWindow->mainWindow->view.render();
     consoleWindow->mainWindow->view.update();
@@ -187,6 +199,62 @@ void QuitApp::command(void *data)
     consoleWindow->lineEdit.setText("");
 }
 
+class AppKeys : public NEConsoleCommand
+{
+public:
+    AppKeys(NEConsoleWindow *consoleWindow):NEConsoleCommand(consoleWindow)
+    {
+        name = "keys";
+        description = "prints a list of keystrokes";
+    }
+    void command(void *data);
+};
+
+void AppKeys::command(void *data)
+{
+    consoleWindow->appendText("\n");
+    consoleWindow->appendText("control + \t--- zoom in\n");
+    consoleWindow->appendText("control - \t--- zoom out\n");
+    //consoleWindow->appendText("alt + \t--- increase resolution\n");
+    //consoleWindow->appendText("alt - \t--- decrease resolution\n");
+    consoleWindow->appendText("arrow keys --- scroll around by 10 pixels\n");
+    consoleWindow->appendText("arrow keys with shift  --- scroll around by 1 pixel\n");
+    consoleWindow->appendText("arrow keys with control --- scroll around by 100 pixels\n");
+    consoleWindow->appendText("arrow keys with control and shift --- scroll around by 500 pixels\n");
+    consoleWindow->appendText("arrow keys with alt --- scroll by factorials\n");
+    consoleWindow->appendText("space bar \t--- click point under crosshair\n");
+    consoleWindow->lineEdit.setText("");
+}
+
+/*
+class DumpData : public ConsoleCommand
+{
+public:
+    DumpData(ConsoleWindow *consoleWindow):ConsoleCommand(consoleWindow)
+    {
+        name = "dump";
+        description = "dump data points";
+    }
+    void command(void *data);
+};
+
+void DumpData::command(void *data)
+{
+    for(int i=0;i<cw->displayWidget->displayObjects.count();i++)
+    {
+        if(cw->displayWidget->displayObjects[i]->name=="PointData")
+        {
+            for(int j=0;j<((PointData*)cw->displayWidget->displayObjects[i])->points.count();j++)
+            {
+                float a = ((PointData*)cw->displayWidget->displayObjects[i])->points[j].first;
+                float b = ((PointData*)cw->displayWidget->displayObjects[i])->points[j].second;
+                cw->appendText(QN(a)+","+QN(b)+"\n");
+            }
+        }
+    }
+    cw->ui->lineEdit->setText("");
+}
+*/
 
 
 class TestCommand : public NEConsoleCommand

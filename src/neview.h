@@ -39,6 +39,7 @@ public:
     void setPoint(mpz_int x, mpz_int y);
     void setXPos(mpz_int x);
     void setYPos(mpz_int y);
+    void setScale(int scale);
     void getScreenBounds(mpz_int *top, mpz_int *bottom, mpz_int *left, mpz_int *right);
     void printScreenPoint(int x, int y);
 
@@ -53,7 +54,8 @@ public:
     boost::multiprecision::mpz_int xScrollAmt, yScrollAmt;
     bool factorialXScrolling;
     bool factorialYScrolling;
-    long int xFactorialOffset,yFactorialOffset;
+    long int xFactorialOffset;
+    long int yFactorialOffset;
     int scale;
     int resolution;
 

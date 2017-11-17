@@ -70,6 +70,56 @@ void NEView::getScreenBounds(mpz_int *top, mpz_int *bottom, mpz_int *left, mpz_i
 
 }
 
+void NEView::setScale(int scale)
+{
+    if(scale<=0){scale=1;}
+    if(scale>300){scale=300;}
+    if(scale>this->scale)
+    {
+        this->scale=scale;
+        mpf_float w = width();
+        mpf_float s = scale;
+        mpf_float sW = w/(s-1)/2;
+        mpf_float h = height();
+        mpf_float sH = h/(s-1)/2;
+        mpf_float xo = xOffset;
+        mpf_float sX = xo/(s-1)*s;
+        mpf_float yo = yOffset;
+        mpf_float sY = yo/(s-1)*s;
+
+        mpf_float a = sX+sW;
+        mpf_float b = sY+sH;
+
+        xOffset = (mpz_int)a;
+        yOffset = (mpz_int)b;
+
+        xScrollAmt = xOffset;
+        yScrollAmt = yOffset;
+    }
+    else if(scale<this->scale)
+    {
+        this->scale=scale;
+        mpf_float w = width();
+        mpf_float s = scale;
+        mpf_float sW = w/(s+1)/2;
+        mpf_float h = height();
+        mpf_float sH = h/(s+1)/2;
+        mpf_float xo = xOffset;
+        mpf_float sX = xo/(s+1)*s;
+        mpf_float yo = yOffset;
+        mpf_float sY = yo/(s+1)*s;
+
+        mpf_float a = sX-sW;
+        mpf_float b = sY-sH;
+
+        xOffset = (mpz_int)a;
+        yOffset = (mpz_int)b;
+
+        xScrollAmt = xOffset;
+        yScrollAmt = yOffset;
+    }
+}
+
 void NEView::setXPos(mpz_int x)
 {
     xScrollAmt=x*scale-width()/2;
@@ -89,6 +139,7 @@ void NEView::setPoint(mpz_int x, mpz_int y)
 
     //we can speed this up by minimizing the use of the mpz types, precompute when possible
     //        and convert to int early if possible!
+    //when scale is large everything runs too slow!
 
 
     if(scale==1)
@@ -202,36 +253,7 @@ void NEView::keyPressEvent(QKeyEvent *event)
         {
             if(event->modifiers()&Qt::ControlModifier)
             {
-                scale++;
-                mpf_float w = width();
-                mpf_float s = scale;
-                mpf_float sW = w/(s-1)/2;
-                mpf_float h = height();
-                mpf_float sH = h/(s-1)/2;
-                mpf_float xo = xOffset;
-                mpf_float sX = xo/(s-1)*s;
-                mpf_float yo = yOffset;
-                mpf_float sY = yo/(s-1)*s;
-
-                mpf_float a = sX+sW;
-                mpf_float b = sY+sH;
-
-                xOffset = (mpz_int)a;
-                yOffset = (mpz_int)b;
-
-                xScrollAmt = xOffset;
-                yScrollAmt = yOffset;
-
-                /*
-                sW = static_cast<mpf_float>(width())/static_cast<mpf_float>(scale-1)/2;
-                sH = (float)height()/(float)(scale-1)/2;
-
-                sX = (float)xOffset/(float)(scale-1)*(float)scale;
-                sY = (float)yOffset/(float)(scale-1)*(float)scale;
-
-                xOffset = boost::multiprecision::round(sX+sW);
-                yOffset = boost::multiprecision::round(sY+sH);
-                */
+                setScale(scale+1);
                 render();
                 update();
             }
@@ -241,28 +263,7 @@ void NEView::keyPressEvent(QKeyEvent *event)
         {
             if(event->modifiers()&Qt::ControlModifier)
             {
-                scale--;
-                if(scale<1){scale=1;}
-
-                mpf_float w = width();
-                mpf_float s = scale;
-                mpf_float sW = w/(s+1)/2;
-                mpf_float h = height();
-                mpf_float sH = h/(s+1)/2;
-                mpf_float xo = xOffset;
-                mpf_float sX = xo/(s+1)*s;
-                mpf_float yo = yOffset;
-                mpf_float sY = yo/(s+1)*s;
-
-                mpf_float a = sX-sW;
-                mpf_float b = sY-sH;
-
-                xOffset = (mpz_int)a;
-                yOffset = (mpz_int)b;
-
-                xScrollAmt = xOffset;
-                yScrollAmt = yOffset;
-
+                setScale(scale-1);
                 render();
                 update();
             }

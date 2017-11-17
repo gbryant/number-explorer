@@ -22,6 +22,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+PRECOMPILED_HEADER = src/precompiled_header.h
+    CONFIG += precompile_header
+
+*msvc* { # visual studio spec filter
+      QMAKE_CXXFLAGS += -MP
+  }
+
 LIBS += "C:\development\mpir-3.0.0\dll\x64\Release\mpir.lib"
 
 INCLUDEPATH += "C:\development\boost_1_65_1"
@@ -34,7 +41,8 @@ HEADERS += \
     src/nedisplayobject.h \
     src/nemainwindow.h \
     src/neview.h \
-    src/pointset.h
+    src/pointset.h \
+    src/precompiled_header.h
 
 SOURCES += \
     src/consolecommands.cpp \

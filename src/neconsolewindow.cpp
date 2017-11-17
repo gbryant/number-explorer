@@ -40,6 +40,8 @@ void NEConsoleWindow::init()
     commands.append(new ToggleBoolean(this,&(mainWindow->view.showClickPoints),"showClickPoints","scp"));
     commands.append(new GoX(this));
     commands.append(new GoY(this));
+    commands.append(new GoScale(this));
+    commands.append(new AppKeys(this));
 }
 
 void NEConsoleWindow::returnPressedSlot()
