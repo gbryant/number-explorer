@@ -1,5 +1,5 @@
 /***********************************************************************
-Copyright 2016 Gregory Bryant
+Copyright 2018 Gregory Bryant
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ NEConsoleWindow::NEConsoleWindow(QWidget *parent) : QWidget(parent)
 
 void NEConsoleWindow::init()
 {
+    //commands.append(new NEConsoleCommand(this,"quit","q","quit application",command));
     commands.append(new QuitApp(this));
     commands.append(new TestCommand(this));
     commands.append(new PrintInfo(this));

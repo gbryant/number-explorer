@@ -1,5 +1,5 @@
 /***********************************************************************
-Copyright 2016 Gregory Bryant
+Copyright 2018 Gregory Bryant
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -147,6 +147,13 @@ public:
 
 void PrintInfo::command(void *data)
 {
+    mpz_int left;
+    mpz_int right;
+    mpz_int top;
+    mpz_int bottom;
+    std::stringstream xStream;
+    std::stringstream yStream;
+    consoleWindow->mainWindow->view.getScreenBounds(&top,&bottom,&left,&right);
     consoleWindow->appendText("\n");
     QString outStr = QString("scale: ");
     outStr += QN(consoleWindow->mainWindow->view.scale);
@@ -154,13 +161,27 @@ void PrintInfo::command(void *data)
     outStr += QString("resolution: ");
     outStr += QN(consoleWindow->mainWindow->view.resolution);
     outStr+="\n";
+    xStream.str("");
+    yStream.str("");
+    xStream<<top;
+    yStream<<bottom;
+    outStr+="top: "+QString::fromStdString(xStream.str());
+    outStr+=" bottom: "+QString::fromStdString(yStream.str());
+    outStr+="\n";
+    xStream.str("");
+    yStream.str("");
+    xStream<<left;
+    yStream<<right;
+    outStr+="left: "+QString::fromStdString(xStream.str());
+    outStr+=" right: "+QString::fromStdString(yStream.str());
+    outStr+="\n";
     outStr+="xFactorialOffset: "+QN(consoleWindow->mainWindow->view.xFactorialOffset);
     outStr+="\n";
     outStr+="yFactorialOffset: "+QN(consoleWindow->mainWindow->view.yFactorialOffset);
     outStr+="\n";
-    std::stringstream xStream;
+    xStream.str("");
+    yStream.str("");
     xStream<<consoleWindow->mainWindow->view.xOffset;
-    std::stringstream yStream;
     yStream<<consoleWindow->mainWindow->view.yOffset;
     outStr+="xOffset:"+QString::fromStdString(xStream.str());
     outStr+="\n";

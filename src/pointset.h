@@ -1,5 +1,5 @@
 /***********************************************************************
-Copyright 2016 Gregory Bryant
+Copyright 2018 Gregory Bryant
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ limitations under the License.
 #define POINTSET_H
 #include <boost/multiprecision/gmp.hpp>
 using boost::multiprecision::mpz_int;
+using boost::multiprecision::mpf_float;
 #include "nedisplayobject.h"
 
 class PointSet : public NEDisplayObject
@@ -26,7 +27,7 @@ class PointSet : public NEDisplayObject
 public:
     PointSet();
     void render(NEView *view);
-    QList<mpz_int> points;
+    QList<QPair<mpf_float,mpf_float>> points;
     mpz_int left;
     mpz_int right;
     mpz_int top;

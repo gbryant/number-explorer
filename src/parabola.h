@@ -15,23 +15,35 @@ limitations under the License.
 ***********************************************************************/
 
 
-#include "pointset.h"
-#include "neconsolewindow.h"
-#include "neview.h"
+#ifndef PARABOLA_H
+#define PARABOLA_H
+
+#include "nedisplayobject.h"
 #include <boost/multiprecision/gmp.hpp>
-#include <iostream>
+using boost::multiprecision::mpz_int;
 
-PointSet::PointSet()
+class Parabola : public NEDisplayObject
 {
-name = "PointSet";
-}
+public:
+    Parabola();
+    Parabola(int aIn,int bIn, int cIn);
+    Parabola(int aIn,int bIn, int cIn, int cR, int cG, int cB);
+    void init(void);
+    bool isVisible(NEView *view);
+    void render(NEView *view);
+    double getArcLength(double x1, double x2,double precision);
 
-void PointSet::render(NEView *view)
-{
-    //add checks to only draw on screen points
-    view->getScreenBounds(&top,&bottom,&left,&right);
-    for(int i=0;i<points.length();i++)
-    {
-        view->setPoint(points[i].first,points[i].second);
-    }
-}
+    int cR,cG,cB;
+    int a,b,c;      //y = ax^2 + bx + c
+    int directrix;
+    std::pair<float,float> focus;
+    std::pair<float,float> vertex;
+    int direction;
+
+    mpz_int left;
+    mpz_int right;
+    mpz_int top;
+    mpz_int bottom;
+};
+
+#endif // PARABOLA_H

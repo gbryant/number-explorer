@@ -42,7 +42,9 @@ HEADERS += \
     src/nemainwindow.h \
     src/neview.h \
     src/pointset.h \
-    src/precompiled_header.h
+    src/precompiled_header.h \
+    src/parabola.h \
+    src/trigonometric.h
 
 SOURCES += \
     src/consolecommands.cpp \
@@ -53,7 +55,9 @@ SOURCES += \
     src/nedisplayobject.cpp \
     src/nemainwindow.cpp \
     src/neview.cpp \
-    src/pointset.cpp
+    src/pointset.cpp \
+    src/parabola.cpp \
+    src/trigonometric.cpp
 
 
 

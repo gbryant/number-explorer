@@ -1,5 +1,5 @@
 /***********************************************************************
-Copyright 2016 Gregory Bryant
+Copyright 2018 Gregory Bryant
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ NEView::NEView(QWidget *parent) : QWidget(parent)
     originalXScrollAmt=0;
     originalYScrollAmt=0;
     scale=1;
+    resolution=1;
     showCrossHairs=true;
     showClickPoints=true;
 }
@@ -59,6 +60,18 @@ void NEView::getScreenBounds(mpz_int *top, mpz_int *bottom, mpz_int *left, mpz_i
     //the plus and minus 1s are to over report the points to draw by one in each dimension
     //this ensures edge points aren't left off due to rounding down when zoomed in
 
+    if(resolution!=1)
+    {
+        *top = (yOffset+height()-1)/resolution/scale;
+        *top += 1;
+        *bottom = yOffset/resolution/scale;
+        *bottom -= 1;
+        *left = xOffset/resolution/scale;
+        *left -= 1;
+        *right = (xOffset+width()-1)/resolution/scale;
+        *right += 1;
+        return;
+    }
     *top = (yOffset+height()-1)/scale;
     *top += 1;
     *bottom = yOffset/scale;
@@ -139,7 +152,78 @@ void NEView::setPoint(mpz_int x, mpz_int y)
 
     //we can speed this up by minimizing the use of the mpz types, precompute when possible
     //        and convert to int early if possible!
-    //when scale is large everything runs too slow!
+    //when scale is large everything runs too slow! though faster in debug mode
+
+
+    if(scale==1)
+    {
+        if(static_cast<int>(yVal)>0 && static_cast<int>(yVal)<height() && static_cast<int>(xVal)>0 && static_cast<int>(xVal)<width())
+        {
+            QRgb *scanLine = reinterpret_cast<QRgb*>(image->scanLine(static_cast<int>(yVal)));
+            scanLine[static_cast<int>(xVal)]=qRgb(255,255,255);
+        }
+    }
+    else
+    {
+        for(int j=0;j<scale;j++)
+        {
+            for(int i=0;i<scale;i++)
+            {
+                if(static_cast<int>(yVal)+j>0 && static_cast<int>(yVal)+j<height() && static_cast<int>(xVal)+i>0 && static_cast<int>(xVal)+i<width())
+                {
+                    QRgb *scanLine = reinterpret_cast<QRgb*>(image->scanLine(static_cast<int>(yVal)+j));
+                    scanLine[static_cast<int>(xVal)+i]=qRgb(255,255,255);
+                }
+            }
+        }
+    }
+
+}
+
+void NEView::setPoint(mpz_int x, mpz_int y, int r, int g, int b)
+{
+    yVal = height()-1-(y*scale)+yOffset;
+    xVal = (x*scale)-xOffset;
+
+    //we can speed this up by minimizing the use of the mpz types, precompute when possible
+    //        and convert to int early if possible!
+    //when scale is large everything runs too slow! though faster in debug mode
+
+
+    if(scale==1)
+    {
+        if(static_cast<int>(yVal)>0 && static_cast<int>(yVal)<height() && static_cast<int>(xVal)>0 && static_cast<int>(xVal)<width())
+        {
+            QRgb *scanLine = reinterpret_cast<QRgb*>(image->scanLine(static_cast<int>(yVal)));
+            scanLine[static_cast<int>(xVal)]=qRgb(r,g,b);
+        }
+    }
+    else
+    {
+        for(int j=0;j<scale;j++)
+        {
+            for(int i=0;i<scale;i++)
+            {
+                if(static_cast<int>(yVal)+j>0 && static_cast<int>(yVal)+j<height() && static_cast<int>(xVal)+i>0 && static_cast<int>(xVal)+i<width())
+                {
+                    QRgb *scanLine = reinterpret_cast<QRgb*>(image->scanLine(static_cast<int>(yVal)+j));
+                    scanLine[static_cast<int>(xVal)+i]=qRgb(r,g,b);
+                }
+            }
+        }
+    }
+
+}
+
+void NEView::setPoint(mpf_float x, mpf_float y)
+{
+
+    yVal = height()-1-(static_cast<int>(y)*scale*resolution)+yOffset;
+    xVal = (static_cast<int>(x)*scale*resolution)-xOffset;
+
+    //we can speed this up by minimizing the use of the mpz types, precompute when possible
+    //        and convert to int early if possible!
+    //when scale is large everything runs too slow! though faster in debug mode
 
 
     if(scale==1)
@@ -206,7 +290,12 @@ void NEView::printScreenPoint(int x, int y)
     std::stringstream pYStream;
     pYStream<<pY;
 
-    consoleWindow->appendText(QString::fromStdString(pXStream.str())+","+QString::fromStdString(pYStream.str())+"\n");
+    mpz_int pP=pX+(pY/pX);
+    std::stringstream pPStream;
+    pPStream<<pP;
+    //p=x+(y/x)
+
+    consoleWindow->appendText(QString::fromStdString(pXStream.str())+","+QString::fromStdString(pYStream.str())+":"+QString::fromStdString(pPStream.str())+"\n");
 }
 
 
@@ -257,6 +346,12 @@ void NEView::keyPressEvent(QKeyEvent *event)
                 render();
                 update();
             }
+            else if(event->modifiers()&Qt::AltModifier)
+            {
+                resolution+=1;
+                render();
+                update();
+            }
         }
         break;
         case Qt::Key_Minus:
@@ -264,6 +359,14 @@ void NEView::keyPressEvent(QKeyEvent *event)
             if(event->modifiers()&Qt::ControlModifier)
             {
                 setScale(scale-1);
+                render();
+                update();
+            }
+            else if(event->modifiers()&Qt::AltModifier)
+            {
+                resolution-=1;
+                if(resolution<1)
+                {resolution=1;}
                 render();
                 update();
             }

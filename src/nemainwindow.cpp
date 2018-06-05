@@ -1,5 +1,5 @@
 /***********************************************************************
-Copyright 2016 Gregory Bryant
+Copyright 2018 Gregory Bryant
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@ limitations under the License.
 
 #include "nemainwindow.h"
 #include "factormap.h"
+#include "parabola.h"
+#include "pointset.h"
+#include "trigonometric.h"
 
 NEMainWindow::NEMainWindow(QWidget *parent):QMainWindow(parent)
 {
@@ -31,10 +34,36 @@ NEMainWindow::NEMainWindow(QWidget *parent):QMainWindow(parent)
 
     view.consoleWindow = &consoleWindow;
 
+    Trigonometric *tm = new Trigonometric();
+    //tm->consoleWindow = &consoleWindow;
     FactorMap *fm = new FactorMap();
     fm->consoleWindow = &consoleWindow;
+    //PointSet *ps = new PointSet();
+
+    /*
+    ps->points.append(qMakePair(1.0,1.0));
+    ps->points.append(qMakePair(2.0,1.0));
+    ps->points.append(qMakePair(3.0,1.0));
+    ps->points.append(qMakePair(4.0,1.0));
+    ps->points.append(qMakePair(5.0,1.0));
+    */
+
     view.displayObjects.append(fm);
 
+    //view.displayObjects.append(tm);
+/*
+    for(int i=1;i<=1000;i++)
+    {
+        if(i%2)
+        {
+            view.displayObjects.append(new Parabola(-1,i,0,255,0,0));
+        }
+        else
+        {
+            view.displayObjects.append(new Parabola(-1,i,0,0,0,255));
+        }
+    }
+*/
     //setCentralWidget(&graphicsView);
     QDockWidget *dock = new QDockWidget(tr("Console"), this);
     dock->setWidget(&consoleWindow);

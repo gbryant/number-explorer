@@ -1,5 +1,5 @@
 /***********************************************************************
-Copyright 2016 Gregory Bryant
+Copyright 2018 Gregory Bryant
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ limitations under the License.
 #include "nedisplayobject.h"
 #include <boost/multiprecision/gmp.hpp>
 using boost::multiprecision::mpz_int;
+using boost::multiprecision::mpf_float;
 
 class NEConsoleWindow;
 
@@ -36,7 +37,13 @@ public:
     void mouseMoveEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void render();
+
     void setPoint(mpz_int x, mpz_int y);
+    void setPoint(mpz_int x, mpz_int y, int r, int g, int b);
+
+    void setPoint(mpf_float x, mpf_float y);
+    void setPoint(mpf_float x, mpf_float y, int r, int g, int b);
+
     void setXPos(mpz_int x);
     void setYPos(mpz_int y);
     void setScale(int scale);
